@@ -1,0 +1,476 @@
+/* Palette: cool field-white paper, turf green for structure and selection,
+   green/red reserved for price movement so flashes always mean something. */
+:root {
+  --paper: #f4f6f2;
+  --surface: #ffffff;
+  --ink: #17221c;
+  --muted: #5b6a62;
+  --rule: #d8ded6;
+  --turf: #1d5a41;
+  --turf-soft: #e3ede6;
+  --up: #16824a;
+  --up-wash: rgba(22, 130, 74, 0.22);
+  --down: #c0392b;
+  --down-wash: rgba(192, 57, 43, 0.2);
+  --warn: #a8690c;
+
+  --display: 'Barlow Condensed', 'Arial Narrow', 'Roboto Condensed', sans-serif;
+  --body: 'IBM Plex Sans', system-ui, -apple-system, 'Segoe UI', sans-serif;
+
+  color-scheme: light dark;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --paper: #121a16;
+    --surface: #18221d;
+    --ink: #e6ede8;
+    --muted: #93a39a;
+    --rule: #2b3831;
+    --turf: #6fc39b;
+    --turf-soft: #1f3129;
+    --up: #4cc987;
+    --up-wash: rgba(76, 201, 135, 0.24);
+    --down: #ff7a6b;
+    --down-wash: rgba(255, 122, 107, 0.22);
+    --warn: #e0a64a;
+  }
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html,
+body {
+  margin: 0;
+  height: 100%;
+}
+
+body {
+  background: var(--paper);
+  color: var(--ink);
+  font: 400 15px/1.5 var(--body);
+  -webkit-font-smoothing: antialiased;
+}
+
+button,
+input {
+  font: inherit;
+  color: inherit;
+}
+
+:focus-visible {
+  outline: 2px solid var(--turf);
+  outline-offset: 2px;
+}
+
+.visually-hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  white-space: nowrap;
+}
+
+/* ---------- layout ---------- */
+
+.app {
+  display: grid;
+  grid-template-columns: 17.5rem minmax(0, 1fr);
+  min-height: 100vh;
+}
+
+.rail {
+  position: sticky;
+  top: 0;
+  height: 100vh;
+  overflow-y: auto;
+  border-right: 1px solid var(--rule);
+  padding: 1.25rem 1rem 2rem;
+}
+
+.main {
+  padding: 1.75rem clamp(1rem, 3vw, 2.5rem) 3rem;
+  min-width: 0;
+}
+
+@media (max-width: 820px) {
+  .app {
+    grid-template-columns: 1fr;
+  }
+  .rail {
+    position: static;
+    height: auto;
+    max-height: 45vh;
+    border-right: 0;
+    border-bottom: 1px solid var(--rule);
+  }
+}
+
+/* ---------- rail ---------- */
+
+.rail-head {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 0.5rem;
+  margin-bottom: 1rem;
+}
+
+.brand {
+  margin: 0;
+  white-space: nowrap;
+  font: 600 1.25rem/1 var(--display);
+  letter-spacing: 0.01em;
+}
+
+.refresh {
+  background: none;
+  border: 0;
+  padding: 0.25rem 0;
+  color: var(--turf);
+  font-size: 0.8125rem;
+  font-weight: 500;
+  white-space: nowrap;
+  cursor: pointer;
+}
+.refresh:hover:not(:disabled) {
+  text-decoration: underline;
+}
+.refresh:disabled {
+  color: var(--muted);
+  cursor: default;
+}
+
+.rail-note,
+.games-empty {
+  color: var(--muted);
+  font-size: 0.875rem;
+}
+
+.notice {
+  border-left: 3px solid var(--down);
+  background: var(--surface);
+  padding: 0.625rem 0.75rem;
+  margin-bottom: 1rem;
+  font-size: 0.875rem;
+}
+.notice p {
+  margin: 0 0 0.375rem;
+}
+.notice button {
+  background: none;
+  border: 1px solid var(--rule);
+  border-radius: 4px;
+  padding: 0.125rem 0.625rem;
+  cursor: pointer;
+}
+
+.games-search input {
+  width: 100%;
+  padding: 0.5rem 0.625rem;
+  background: var(--surface);
+  border: 1px solid var(--rule);
+  border-radius: 6px;
+  margin-bottom: 0.75rem;
+}
+
+.games-day + .games-day {
+  margin-top: 1rem;
+}
+
+.games-day-title {
+  margin: 0 0 0.25rem;
+  font-size: 0.8125rem;
+  font-weight: 600;
+  color: var(--muted);
+}
+
+.games ul {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+/* The one loud element: big scoreboard team codes. */
+.game {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  grid-template-areas:
+    'codes time'
+    'title title';
+  width: 100%;
+  text-align: left;
+  background: none;
+  border: 0;
+  border-left: 3px solid transparent;
+  border-radius: 0 6px 6px 0;
+  padding: 0.5rem 0.625rem 0.5rem 0.75rem;
+  cursor: pointer;
+}
+.game:hover {
+  background: var(--surface);
+}
+.game[aria-current='true'] {
+  background: var(--turf-soft);
+  border-left-color: var(--turf);
+}
+
+.game-codes {
+  grid-area: codes;
+  font: 700 1.75rem/1 var(--display);
+  letter-spacing: 0.02em;
+}
+.game[aria-current='true'] .game-codes {
+  color: var(--turf);
+}
+.game-vs {
+  font-weight: 500;
+  font-size: 0.55em;
+  color: var(--muted);
+  margin: 0 0.3em;
+  vertical-align: 0.25em;
+}
+.game-time {
+  grid-area: time;
+  align-self: center;
+  font-size: 0.8125rem;
+  color: var(--muted);
+  font-variant-numeric: tabular-nums;
+}
+.game-title {
+  grid-area: title;
+  font-size: 0.8125rem;
+  color: var(--muted);
+  margin-top: 0.125rem;
+}
+
+/* ---------- board ---------- */
+
+.board {
+  max-width: 60rem;
+}
+
+.board-head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 0.75rem 2rem;
+  margin-bottom: 1.25rem;
+}
+
+.board-title {
+  margin: 0;
+  font: 700 clamp(2rem, 4.5vw, 3rem) / 1 var(--display);
+  letter-spacing: 0.005em;
+}
+
+.board-meta {
+  margin: 0.375rem 0 0;
+  color: var(--muted);
+  font-size: 0.875rem;
+}
+
+.board-empty {
+  color: var(--muted);
+  max-width: 34rem;
+}
+
+.board-foot {
+  margin-top: 0.875rem;
+  color: var(--muted);
+  font-size: 0.8125rem;
+}
+
+.conn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin: 0;
+  font-size: 0.8125rem;
+  font-weight: 500;
+}
+.conn-dot {
+  width: 0.5rem;
+  height: 0.5rem;
+  border-radius: 50%;
+  background: var(--muted);
+}
+.conn-live .conn-dot {
+  background: var(--up);
+  box-shadow: 0 0 0 3px var(--up-wash);
+}
+.conn-reconnecting .conn-dot,
+.conn-connecting .conn-dot {
+  background: var(--warn);
+}
+.conn-since {
+  color: var(--muted);
+  font-weight: 400;
+  font-variant-numeric: tabular-nums;
+}
+
+/* ---------- table ---------- */
+
+.table-wrap {
+  overflow-x: auto;
+  background: var(--surface);
+  border: 1px solid var(--rule);
+  border-radius: 8px;
+}
+
+.quotes {
+  width: 100%;
+  border-collapse: collapse;
+  font-variant-numeric: tabular-nums;
+}
+
+.quotes th,
+.quotes td {
+  padding: 0.5rem 0.875rem;
+  text-align: left;
+  white-space: nowrap;
+}
+
+.quotes thead th {
+  position: sticky;
+  top: 0;
+  z-index: 1;
+  background: var(--surface);
+  font-size: 0.8125rem;
+  font-weight: 500;
+  color: var(--muted);
+  border-bottom: 1px solid var(--rule);
+}
+
+.quotes .num {
+  text-align: right;
+  width: 7.5rem;
+}
+
+.quotes td.num {
+  font-size: 0.9375rem;
+  font-weight: 500;
+}
+.quotes td.spread {
+  color: var(--muted);
+  font-weight: 400;
+}
+
+.section-row th {
+  font: 600 1.125rem/1.2 var(--display);
+  padding-top: 1.125rem;
+  color: var(--turf);
+  border-bottom: 1px solid var(--rule);
+}
+.section-note {
+  margin-left: 0.625rem;
+  font: 400 0.8125rem var(--body);
+  color: var(--muted);
+}
+
+.quotes tbody tr.market-start > * {
+  border-top: 1px solid var(--rule);
+}
+.section-row + tr.market-start > * {
+  border-top: 0;
+}
+
+.quotes tbody tr:not(.section-row):hover > * {
+  background: color-mix(in srgb, var(--turf-soft) 55%, transparent);
+}
+
+.outcome {
+  font-weight: 400;
+}
+.outcome-label {
+  display: block;
+  font-weight: 600;
+}
+.outcome-market {
+  display: block;
+  font-size: 0.75rem;
+  color: var(--muted);
+}
+
+tr[aria-busy='true'] td {
+  color: var(--muted);
+}
+
+/* ---------- flashes ---------- */
+
+@keyframes flash-up {
+  from {
+    background-color: var(--up-wash);
+    color: var(--up);
+  }
+  to {
+    background-color: transparent;
+  }
+}
+@keyframes flash-down {
+  from {
+    background-color: var(--down-wash);
+    color: var(--down);
+  }
+  to {
+    background-color: transparent;
+  }
+}
+
+.quotes td.flash-up {
+  animation: flash-up 500ms ease-out;
+}
+.quotes td.flash-down {
+  animation: flash-down 500ms ease-out;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  /* Keep the information (color), drop the fade. */
+  .quotes td.flash-up,
+  .quotes td.flash-down {
+    animation: none;
+  }
+  .quotes td.flash-up {
+    color: var(--up);
+  }
+  .quotes td.flash-down {
+    color: var(--down);
+  }
+}
+
+/* ---------- small screens: rows become compact cards ---------- */
+
+@media (max-width: 560px) {
+  .quotes thead {
+    display: none;
+  }
+  .section-row th {
+    border-bottom: 0;
+  }
+  .quotes tbody tr:not(.section-row) {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    padding: 0.5rem 0;
+  }
+  .quotes tbody tr:not(.section-row) > th {
+    grid-column: 1 / -1;
+    padding-bottom: 0.25rem;
+  }
+  .quotes .num {
+    width: auto;
+    text-align: left;
+  }
+  .quotes td.num::before {
+    content: attr(data-label);
+    display: block;
+    font-size: 0.6875rem;
+    font-weight: 400;
+    color: var(--muted);
+  }
+}
