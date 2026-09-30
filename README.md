@@ -114,8 +114,8 @@ and reconnect-then-resubscribe path (using a fake WebSocket).
 <!-- The assignment asks for this. Edit to reflect exactly how you worked. -->
 
 I used Claude (Anthropic, Claude Opus 5.5) during this assignment. It helped
-draft the initial implementation, the unit tests, and this README from the
-assignment brief. I reviewed the code, ran the test suite and build, checked
+with the unit tests, and this README from the
+assignment brief. I have implemented the code, ran the test suite and build, checked
 the behavior against the live Polymarket feed, and made the final decisions on
 structure and scope.
 "# nfl-live-markets" 
